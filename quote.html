@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#5FB82A">
+<title>春茂實業｜盤頭紗詢價</title>
+<style>
+  :root{
+    --ink:#1E2326; --ink2:#5A6368; --ink3:#8C959A;
+    --green:#5FB82A; --green2:#7EC83C; --green-d:#4A9A1E;
+    --tint:#F1F8EA; --line:#E3E7E9; --bg:#FFFFFF; --soft:#F7F8F9;
+    --err:#D64545; --err-bg:#FDF1F1;
+    --r:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{
+    font-family:"PingFang TC","Noto Sans TC","Noto Sans CJK TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;
+    font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%;
+    padding-bottom:calc(96px + env(safe-area-inset-bottom));
+  }
+  /* Header */
+  header{
+    position:sticky;top:0;z-index:20;background:#fff;
+    border-bottom:1px solid var(--line);
+    padding:calc(12px + env(safe-area-inset-top)) 18px 12px;
+  }
+  header .bar{display:flex;align-items:center;gap:10px}
+  header .dot{width:10px;height:24px;border-radius:4px;background:linear-gradient(180deg,var(--green2),var(--green))}
+  header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.5px}
+  header h1 span{color:var(--green-d);font-weight:700}
+  header .sub{margin:4px 0 0 20px;font-size:12.5px;color:var(--ink3)}
+  .mode{margin-left:auto;font-size:11px;padding:3px 8px;border-radius:99px;background:var(--soft);color:var(--ink2);border:1px solid var(--line);white-space:nowrap}
+  .mode.live{background:var(--tint);color:var(--green-d);border-color:#CFE8BA}
+
+  main{max-width:560px;margin:0 auto;padding:14px 14px 0}
+  .intro{font-size:14px;color:var(--ink2);margin:4px 4px 14px}
+  .intro b{color:var(--err);font-weight:600}
+
+  /* Field cards */
+  .field{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r);
+    padding:16px 16px 18px;margin-bottom:12px;scroll-margin-top:90px;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field.invalid{border-color:var(--err);box-shadow:0 0 0 3px var(--err-bg)}
+  .label{display:flex;align-items:baseline;gap:6px;font-size:16.5px;font-weight:700;margin:0 0 12px}
+  .label .no{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:7px;background:var(--tint);color:var(--green-d);font-size:12.5px;font-weight:700;transform:translateY(-1px)}
+  .req{color:var(--err);font-weight:700}
+  .opt{font-size:12.5px;font-weight:400;color:var(--ink3)}
+  .hint{font-size:12.5px;color:var(--ink3);font-weight:400;margin-left:auto}
+  .err{display:none;margin-top:10px;font-size:13.5px;color:var(--err)}
+  [data-req].invalid .inp{border-color:var(--err);background:var(--err-bg)}
+  .stack [data-req].invalid .err{display:block;margin-top:6px}
+  .field.invalid .err{display:block}
+
+  /* Chips */
+  .chips{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .chips.c3{grid-template-columns:repeat(3,1fr)}
+  .chips.wrap{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{position:relative;display:block}
+  .chip input{position:absolute;opacity:0;inset:0;margin:0;pointer-events:none}
+  .chip{height:100%}
+  .chip span{
+    height:100%;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;
+    min-height:50px;padding:10px 12px;border-radius:12px;
+    border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    font-size:15.5px;font-weight:500;cursor:pointer;user-select:none;
+    transition:background .12s,border-color .12s,color .12s,transform .08s;
+  }
+  .chips.c3 .chip span{padding:8px 4px;font-size:15px;line-height:1.35}
+  .chips.wrap .chip span{min-height:44px;padding:9px 15px;border-radius:99px;font-size:15px}
+  .chip span:active{transform:scale(.97)}
+  .chip input:checked + span{background:var(--tint);border-color:var(--green);color:var(--green-d);font-weight:700}
+  .chip input:checked + span::before{
+    content:"";width:16px;height:16px;flex:none;border-radius:50%;
+    background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.3l2.6 2.5L12 5.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat;
+  }
+  .chip input:focus-visible + span{outline:3px solid #BFE3A2;outline-offset:2px}
+  .chip.full{grid-column:1/-1}
+
+  /* Inputs */
+  .inp, select.inp, textarea.inp{
+    width:100%;min-height:52px;padding:12px 14px;border-radius:12px;
+    border:1.5px solid var(--line);background:var(--soft);color:var(--ink);
+    font:inherit;font-size:17px;outline:none;-webkit-appearance:none;appearance:none;
+    transition:border-color .12s, background .12s;
+  }
+  .inp::placeholder{color:#A9B0B4}
+  .inp:focus{border-color:var(--green);background:#fff}
+  select.inp{
+    padding-right:44px;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%235FB82A' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 14px center;background-size:20px;
+  }
+  select.inp.empty{color:#A9B0B4}
+  textarea.inp{min-height:96px;resize:vertical;line-height:1.5}
+  .unit-wrap{position:relative}
+  .unit-wrap .inp{padding-right:60px}
+  .unit-wrap .u{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--ink3);font-size:15px;pointer-events:none}
+  .row{display:flex;gap:10px;align-items:stretch}
+  .row > .grow{flex:1;min-width:0}
+  .seg{display:flex;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+  .seg label{position:relative}
+  .seg input{position:absolute;opacity:0;pointer-events:none}
+  .seg span{display:grid;place-items:center;width:58px;height:100%;min-height:49px;font-size:16px;cursor:pointer;background:#fff;color:var(--ink2)}
+  .seg input:checked + span{background:var(--green);color:#fff;font-weight:700}
+  .sub-in{margin-top:10px;display:none}
+  .sub-in.show{display:block;animation:fade .18s ease}
+  .subgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mini{font-size:13px;color:var(--ink2);margin:0 0 6px 2px;font-weight:600}
+  .reveal{display:none;margin-top:14px;padding:14px;border-radius:12px;background:var(--tint);border:1px dashed #BFE0A4}
+  .reveal.show{display:block;animation:fade .2s ease}
+  .reveal .note{font-size:12.5px;color:var(--ink2);margin:0 0 10px}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .group-title{font-size:13px;font-weight:700;color:var(--ink3);letter-spacing:1px;margin:22px 6px 10px}
+  .stack > * + *{margin-top:12px}
+
+  /* Bottom bar */
+  .bottom{
+    position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);
+    backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);
+    border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .bottom .in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .prog{flex:none;font-size:12.5px;color:var(--ink2);line-height:1.25;text-align:center;min-width:58px}
+  .prog b{display:block;font-size:17px;color:var(--ink)}
+  .prog.done b{color:var(--green-d)}
+  .btn{
+    flex:1;min-height:54px;border:0;border-radius:14px;font:inherit;font-size:17.5px;font-weight:700;letter-spacing:1px;
+    background:linear-gradient(180deg,var(--green2),var(--green));color:#fff;cursor:pointer;
+    box-shadow:0 4px 12px rgba(95,184,42,.28);
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn[disabled]{opacity:.6}
+  .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:none;font-weight:600}
+
+  /* Toast */
+  .toast{
+    position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+    background:var(--ink);color:#fff;font-size:14.5px;padding:10px 16px;border-radius:99px;opacity:0;
+    pointer-events:none;transition:.2s;z-index:40;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* Preview */
+  #preview{display:none}
+  #preview.show{display:block}
+  .pv-head{display:flex;align-items:center;gap:10px;margin:6px 4px 12px}
+  .pv-head .ok{width:34px;height:34px;border-radius:50%;background:var(--green);display:grid;place-items:center;flex:none}
+  .pv-head h2{margin:0;font-size:18px}
+  .pv-head p{margin:2px 0 0;font-size:13px;color:var(--ink2)}
+  .pv-box{
+    white-space:pre-wrap;word-break:break-word;background:var(--soft);border:1px solid var(--line);
+    border-left:4px solid var(--green);border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.7;margin:0;
+    font-family:inherit;
+  }
+  .pv-meta{font-size:12px;color:var(--ink3);margin:8px 4px 0;text-align:right}
+  .pv-steps{font-size:13.5px;color:var(--ink2);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:12px}
+  .pv-steps ol{margin:6px 0 0;padding-left:20px}
+  .pv-err{display:none;font-size:13.5px;color:var(--err);background:var(--err-bg);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+  .pv-err.show{display:block}
+  footer{font-size:12px;color:var(--ink3);text-align:center;margin:18px 0 8px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="dot" aria-hidden="true"></div>
+    <h1><span>春茂實業</span>｜盤頭紗詢價</h1>
+    <span class="mode" id="mode">載入中…</span>
+  </div>
+  <div class="sub">Fance Industry · 漿紗整經 · 聚酯／尼龍盤頭紗</div>
+</header>
+
+<main>
+<!-- ================= FORM ================= -->
+<form id="form" novalidate autocomplete="on">
+  <p class="intro">點選下方選項即可快速填寫，<b>*</b> 為必填。送出後業務將盡快與您聯繫報價。</p>
+
+  <div class="group-title">紗線規格</div>
+
+  <!-- 1 紗種 -->
+  <section class="field" data-req="yarn" id="f-yarn">
+    <div class="label"><span class="no">1</span>紗種 <span class="req">*</span></div>
+    <div class="chips" role="radiogroup" aria-label="紗種">
+      <label class="chip"><input type="radio" name="yarn" value="聚酯 FDY"><span>聚酯 FDY</span></label>
+      <label class="chip"><input type="radio" name="yarn" value="聚酯 DTY"><span>聚酯 DTY</span></label>
+      <label class="chip"><input type="radio" name="yarn" value="聚酯 ATY"><span>聚酯 ATY</span></label>
+      <label class="chip"><input type="radio" name="yarn" value="尼龍 FDY"><span>尼龍 FDY</span></label>
+      <label class="chip"><input type="radio" name="yarn" value="尼龍 DTY"><span>尼龍 DTY</span></label>
+      <label class="chip"><input type="radio" name="yarn" value="特殊紗"><span>特殊紗</span></label>
+      <label class="chip full"><input type="radio" name="yarn" value="其他"><span>其他</span></label>
+    </div>
+    <div class="sub-in" id="yarnOtherWrap">
+      <input class="inp" id="yarnOther" type="text" maxlength="60" placeholder="請簡述紗種（選填）">
+    </div>
+    <div class="err">請選擇紗種</div>
+  </section>
+
+  <!-- 2 丹尼／絲數 -->
+  <section class="field" data-req="denier" id="f-denier">
+    <div class="label"><span class="no">2</span>丹尼／絲數 <span class="req">*</span><span class="hint">D/F</span></div>
+    <select class="inp empty" id="denier" name="denier" aria-label="丹尼／絲數">
+      <option value="" selected disabled>請選擇丹尼／絲數</option>
+      <option>15/12</option><option>20/24</option><option>30/12</option>
+      <option>50/36</option><option>50/72</option><option>50/144</option>
+      <option>75/36</option><option>75/72</option><option>100/48</option>
+      <option>150/48</option><option value="其他">其他（自行輸入）</option>
+    </select>
+    <div class="sub-in" id="denierOtherWrap">
+      <input class="inp" id="denierOther" type="text" inputmode="text" maxlength="30" placeholder="例如：40/34">
+    </div>
+    <div class="err" id="denierErr">請選擇丹尼／絲數</div>
+  </section>
+
+  <!-- 3 光澤 -->
+  <section class="field" data-req="luster" id="f-luster">
+    <div class="label"><span class="no">3</span>光澤 <span class="req">*</span></div>
+    <div class="chips" role="radiogroup" aria-label="光澤">
+      <label class="chip"><input type="radio" name="luster" value="半光"><span>半光</span></label>
+      <label class="chip"><input type="radio" name="luster" value="消光"><span>消光</span></label>
+      <label class="chip"><input type="radio" name="luster" value="圓光"><span>圓光</span></label>
+      <label class="chip"><input type="radio" name="luster" value="三角亮光"><span>三角亮光</span></label>
+    </div>
+    <div class="err">請選擇光澤</div>
+  </section>
+
+  <!-- 4 機能 -->
+  <section class="field" id="f-func">
+    <div class="label"><span class="no">4</span>機能 <span class="opt">（可複選）</span></div>
+    <div class="chips wrap" id="funcChips" aria-label="機能">
+      <label class="chip"><input type="checkbox" name="func" value="一般（無特殊機能）" data-none="1"><span>一般（無特殊機能）</span></label>
+    </div>
+  </section>
+
+  <div class="group-title">織造與盤頭</div>
+
+  <!-- 5 織機 -->
+  <section class="field" data-req="loom" id="f-loom">
+    <div class="label"><span class="no">5</span>織機 <span class="req">*</span></div>
+    <div class="chips c3" role="radiogroup" aria-label="織機">
+      <label class="chip"><input type="radio" name="loom" value="水車（W）"><span>水車<br>（W）</span></label>
+      <label class="chip"><input type="radio" name="loom" value="風車／劍帶（A）"><span>風車／劍帶<br>（A）</span></label>
+      <label class="chip"><input type="radio" name="loom" value="緹花（A）"><span>緹花<br>（A）</span></label>
+    </div>
+    <div class="err">請選擇織機</div>
+  </section>
+
+  <!-- 6 頭份條數 -->
+  <section class="field" data-req="ends" id="f-ends">
+    <div class="label"><span class="no">6</span>頭份條數 <span class="req">*</span></div>
+    <div class="unit-wrap">
+      <input class="inp" id="ends" type="number" inputmode="numeric" pattern="[0-9]*" min="1" step="1" placeholder="輸入條數">
+      <span class="u">條</span>
+    </div>
+    <div class="err">請輸入頭份條數（正整數）</div>
+  </section>
+
+  <!-- 7 幅寬 -->
+  <section class="field" data-req="width" id="f-width">
+    <div class="label"><span class="no">7</span>幅寬（英寸） <span class="req">*</span></div>
+    <div class="unit-wrap">
+      <input class="inp" id="width" type="number" inputmode="decimal" min="0" step="any" placeholder="輸入幅寬">
+      <span class="u">英寸</span>
+    </div>
+    <div class="err">請輸入幅寬（大於 0 的數字）</div>
+  </section>
+
+  <!-- 8 總盤頭紗長度 -->
+  <section class="field" data-req="length" id="f-length">
+    <div class="label"><span class="no">8</span>總盤頭紗長度 <span class="req">*</span></div>
+    <div class="row">
+      <div class="grow"><input class="inp" id="length" type="number" inputmode="decimal" min="0" step="any" placeholder="輸入長度"></div>
+      <div class="seg" role="radiogroup" aria-label="長度單位">
+        <label><input type="radio" name="lenUnit" value="米" checked><span>米</span></label>
+        <label><input type="radio" name="lenUnit" value="碼"><span>碼</span></label>
+      </div>
+    </div>
+    <div class="err">請輸入總長度（大於 0 的數字）</div>
+  </section>
+
+  <!-- 9 盤頭數量 -->
+  <section class="field" data-req="beams" id="f-beams">
+    <div class="label"><span class="no">9</span>盤頭數量 <span class="req">*</span></div>
+    <select class="inp empty" id="beams" aria-label="盤頭數量">
+      <option value="" selected disabled>請選擇軸數</option>
+      <option value="1">1 軸</option><option value="2">2 軸</option><option value="3">3 軸</option>
+      <option value="4">4 軸</option><option value="5">5 軸</option><option value="6">6 軸</option>
+      <option value="7">7 軸</option><option value="8">8 軸</option><option value="9">9 軸</option>
+      <option value="10">10 軸</option><option value="其他">其他（自行輸入）</option>
+    </select>
+    <div class="sub-in" id="beamsOtherWrap">
+      <div class="unit-wrap">
+        <input class="inp" id="beamsOther" type="number" inputmode="numeric" pattern="[0-9]*" min="1" step="1" placeholder="輸入軸數">
+        <span class="u">軸</span>
+      </div>
+    </div>
+    <div class="err" id="beamsErr">請選擇盤頭數量</div>
+  </section>
+
+  <!-- 10 交期 -->
+  <section class="field" id="f-lead">
+    <div class="label"><span class="no">10</span>交期</div>
+    <div class="chips" role="radiogroup" aria-label="交期">
+      <label class="chip"><input type="radio" name="lead" value="急件（1週內）"><span>急件（1週內）</span></label>
+      <label class="chip"><input type="radio" name="lead" value="2週"><span>2週</span></label>
+      <label class="chip"><input type="radio" name="lead" value="1個月"><span>1個月</span></label>
+      <label class="chip"><input type="radio" name="lead" value="不急"><span>不急</span></label>
+    </div>
+  </section>
+
+  <!-- 11 原料 -->
+  <section class="field" id="f-src">
+    <div class="label"><span class="no">11</span>原料</div>
+    <div class="chips" role="radiogroup" aria-label="原料">
+      <label class="chip"><input type="radio" name="src" value="本廠供紗"><span>本廠供紗</span></label>
+      <label class="chip"><input type="radio" name="src" value="客戶來紗代工"><span>客戶來紗代工</span></label>
+    </div>
+    <div class="reveal" id="srcExtra">
+      <p class="note">請提供來紗數量，方便我們安排整經：</p>
+      <div class="subgrid">
+        <div>
+          <div class="mini">來紗公斤數</div>
+          <div class="unit-wrap"><input class="inp" id="srcKg" type="number" inputmode="decimal" min="0" step="any" placeholder="0"><span class="u">kg</span></div>
+        </div>
+        <div>
+          <div class="mini">來紗粒數</div>
+          <div class="unit-wrap"><input class="inp" id="srcPcs" type="number" inputmode="numeric" pattern="[0-9]*" min="0" step="1" placeholder="0"><span class="u">粒</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="group-title">聯絡資料</div>
+
+  <!-- 12 聯絡資料 -->
+  <section class="field" id="f-contact">
+    <div class="label"><span class="no">12</span>聯絡資料</div>
+    <div class="stack">
+      <div id="f-company" data-req="company">
+        <div class="mini">公司名稱 <span class="req">*</span></div>
+        <input class="inp" id="company" type="text" maxlength="80" autocomplete="organization" placeholder="例如：○○紡織有限公司">
+        <div class="err">請填寫公司名稱</div>
+      </div>
+      <div id="f-person" data-req="person">
+        <div class="mini">聯絡人 <span class="req">*</span></div>
+        <input class="inp" id="person" type="text" maxlength="40" autocomplete="name" placeholder="姓名／稱謂">
+        <div class="err">請填寫聯絡人</div>
+      </div>
+      <div id="f-phone">
+        <div class="mini">電話</div>
+        <input class="inp" id="phone" type="tel" inputmode="tel" maxlength="30" autocomplete="tel" placeholder="手機或市話">
+      </div>
+      <div>
+        <div class="mini">備註 <span class="opt">（選填）</span></div>
+        <textarea class="inp" id="note" maxlength="800" placeholder="其他需求，例如：預計織造品項、特殊包裝…"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <footer>春茂實業股份有限公司 Fance Industry Co., Ltd.</footer>
+</form>
+
+<!-- ================= PREVIEW ================= -->
+<section id="preview" aria-live="polite">
+  <div class="pv-head">
+    <div class="ok"><svg width="18" height="18" viewBox="0 0 16 16"><path d="M3.5 8.3l3 2.9L12.5 5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div>
+      <h2>詢價內容預覽</h2>
+      <p id="pvSub">目前非 LINE 內開啟，請複製下方內容傳送給我們。</p>
+    </div>
+  </div>
+  <div class="pv-err" id="pvErr"></div>
+  <pre class="pv-box" id="pvBox"></pre>
+  <div class="pv-meta" id="pvMeta"></div>
+  <div class="pv-steps">
+    傳送方式：
+    <ol>
+      <li>點下方「複製內容」</li>
+      <li>開啟 LINE 搜尋官方帳號 <b>@451hxiph</b></li>
+      <li>在聊天室貼上並送出</li>
+    </ol>
+  </div>
+  <footer>春茂實業股份有限公司 Fance Industry Co., Ltd.</footer>
+</section>
+</main>
+
+<div class="bottom">
+  <div class="in" id="barForm">
+    <div class="prog" id="prog"><b>0/10</b>必填</div>
+    <button class="btn" id="submitBtn" type="button">送出詢價</button>
+  </div>
+  <div class="in" id="barPreview" style="display:none">
+    <button class="btn ghost" id="backBtn" type="button" style="flex:0 0 38%">返回修改</button>
+    <button class="btn" id="copyBtn" type="button">複製內容</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js" charset="utf-8"></script>
+<script>
+(function(){
+  'use strict';
+  // ====== 設定 ======
+  const LIFF_ID = 'REPLACE_ME';          // 於 LINE Developers 建立 LIFF App 後替換
+  const MAX_MSG = 4900;                   // LINE 文字訊息上限 5000 字元，預留緩衝
+
+  const FUNCS = ['阻燃','環保','假彈','海島','導電紗','易拉絲','ATY','HOY','sigma','十字斷面','異斷面','海廢紗','複合紗','高強力','大舞龍','小舞龍','20 OP','40 OP'];
+
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+
+  // ---- 建立機能 chips ----
+  const funcBox = $('#funcChips');
+  FUNCS.forEach(v => {
+    const l = document.createElement('label'); l.className = 'chip';
+    l.innerHTML = '<input type="checkbox" name="func"><span></span>';
+    l.firstChild.value = v; l.lastChild.textContent = v;
+    funcBox.appendChild(l);
+  });
+  funcBox.addEventListener('change', e => {
+    const t = e.target; if (!t.checked) return;
+    const noneBox = $('input[data-none]', funcBox);
+    if (t === noneBox) $$('input[name=func]', funcBox).forEach(x => { if (x !== noneBox) x.checked = false; });
+    else noneBox.checked = false;
+  });
+
+  // ---- 動態顯示 ----
+  function radio(name){ const x = $('input[name="'+name+'"]:checked'); return x ? x.value : ''; }
+  function toggle(el, on){ el.classList.toggle('show', !!on); }
+
+  document.addEventListener('change', e => {
+    const n = e.target.name || e.target.id;
+    if (n === 'yarn') toggle($('#yarnOtherWrap'), ['其他','特殊紗'].includes(radio('yarn')));
+    if (n === 'denier') { toggle($('#denierOtherWrap'), e.target.value === '其他'); if (e.target.value === '其他') $('#denierOther').focus(); }
+    if (n === 'beams')  { toggle($('#beamsOtherWrap'), e.target.value === '其他'); if (e.target.value === '其他') $('#beamsOther').focus(); }
+    if (n === 'src') toggle($('#srcExtra'), radio('src') === '客戶來紗代工');
+    if (e.target.tagName === 'SELECT') e.target.classList.toggle('empty', !e.target.value);
+    clearErr(e.target); updateProgress();
+  });
+  document.addEventListener('input', e => { clearErr(e.target); updateProgress(); });
+
+  // ---- 取值 ----
+  const val = id => ($('#'+id).value || '').trim();
+  const num = id => { const v = val(id); return v === '' ? NaN : Number(v); };
+  function denierValue(){ const s = val('denier'); return s === '其他' ? val('denierOther') : s; }
+  function beamsValue(){ const s = val('beams'); return s === '其他' ? val('beamsOther') : s; }
+
+  // ---- 驗證 ----
+  const RULES = {
+    yarn:    () => !!radio('yarn'),
+    denier:  () => !!denierValue(),
+    luster:  () => !!radio('luster'),
+    loom:    () => !!radio('loom'),
+    ends:    () => Number.isInteger(num('ends')) && num('ends') > 0,
+    width:   () => num('width') > 0,
+    length:  () => num('length') > 0,
+    beams:   () => { const b = beamsValue(); return b !== '' && Number.isInteger(Number(b)) && Number(b) > 0; },
+    company: () => !!val('company'),
+    person:  () => !!val('person'),
+  };
+  function clearErr(t){
+    const f = t.closest && t.closest('[data-req]');
+    if (f && f.classList.contains('invalid') && RULES[f.dataset.req]()) {
+      f.classList.remove('invalid');
+    }
+  }
+  function updateProgress(){
+    const keys = Object.keys(RULES), ok = keys.filter(k => RULES[k]()).length;
+    const p = $('#prog'); p.innerHTML = '<b>'+ok+'/'+keys.length+'</b>必填';
+    p.classList.toggle('done', ok === keys.length);
+  }
+  function validate(){
+    let first = null, bad = 0;
+    $$('.invalid').forEach(x => x.classList.remove('invalid'));
+    $$('[data-req]').forEach(f => {
+      if (!RULES[f.dataset.req]()) {
+        bad++; f.classList.add('invalid');
+        if (!first) first = f;
+      }
+    });
+    // 「其他」細項提示文字
+    $('#denierErr').textContent = val('denier') === '其他' ? '請輸入丹尼／絲數' : '請選擇丹尼／絲數';
+    $('#beamsErr').textContent  = val('beams') === '其他'  ? '請輸入盤頭數量（正整數）' : '請選擇盤頭數量';
+    if (first) {
+      first.scrollIntoView({behavior:'smooth', block:'start'});
+      toast('還有 ' + bad + ' 項必填未完成，請確認紅框欄位');
+    }
+    return !first;
+  }
+
+  // ---- 組訊息 ----
+  function fmtNum(n){ return Number(n).toLocaleString('en-US', {maximumFractionDigits: 2}); }
+  function buildMessage(){
+    const L = ['【盤頭紗詢價】'];
+    const add = (k, v) => { if (v !== '' && v != null) L.push('■ ' + k + '：' + v); };
+    let yarn = radio('yarn'); const yo = val('yarnOther');
+    if (yarn && ['其他','特殊紗'].includes(yarn) && yo) yarn += '（' + yo + '）';
+    add('紗種', yarn);
+    add('丹尼／絲數', denierValue());
+    add('光澤', radio('luster'));
+    const funcs = $$('input[name=func]:checked').map(x => x.value);
+    add('機能', funcs.join('、'));
+    add('織機', radio('loom'));
+    if (val('ends'))   add('頭份條數', fmtNum(num('ends')) + ' 條');
+    if (val('width'))  add('幅寬', fmtNum(num('width')) + ' 英寸');
+    if (val('length')) add('總盤頭紗長度', fmtNum(num('length')) + ' ' + radio('lenUnit'));
+    if (beamsValue())  add('盤頭數量', beamsValue() + ' 軸');
+    add('交期', radio('lead'));
+    const src = radio('src');
+    add('原料', src);
+    if (src === '客戶來紗代工') {
+      if (val('srcKg'))  add('來紗公斤數', fmtNum(num('srcKg')) + ' kg');
+      if (val('srcPcs')) add('來紗粒數', fmtNum(num('srcPcs')) + ' 粒');
+    }
+    L.push('────────');
+    add('公司名稱', val('company'));
+    add('聯絡人', val('person'));
+    add('電話', val('phone'));
+    const note = val('note');
+    if (note) { L.push('■ 備註：'); L.push(note); }
+    let msg = L.join('\n');
+    if (msg.length > MAX_MSG) msg = msg.slice(0, MAX_MSG - 6) + '\n…（略）';
+    return msg;
+  }
+
+  // ---- LIFF ----
+  let liffReady = false;
+  const modeEl = $('#mode');
+  function setMode(live){ modeEl.textContent = live ? 'LINE 內' : '預覽模式'; modeEl.classList.toggle('live', live); }
+  function initLiff(){
+    if (typeof window.liff === 'undefined') { setMode(false); return Promise.resolve(); }
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('LIFF init timeout')), 6000));
+    return Promise.race([Promise.resolve().then(() => liff.init({ liffId: LIFF_ID })), timeout])
+      .then(() => { liffReady = true; setMode(liff.isInClient()); })
+      .catch(err => { liffReady = false; setMode(false); console.warn('[LIFF] init failed → preview mode:', err && err.message); });
+  }
+  const liffInit = initLiff();
+
+  // ---- 送出 ----
+  const submitBtn = $('#submitBtn');
+  submitBtn.addEventListener('click', async () => {
+    if (!validate()) return;
+    const msg = buildMessage();
+    submitBtn.disabled = true; submitBtn.textContent = '送出中…';
+    await liffInit;
+    try {
+      if (liffReady && liff.isInClient()) {
+        await liff.sendMessages([{ type: 'text', text: msg }]);
+        toast('已送出，感謝您的詢價！');
+        setTimeout(() => liff.closeWindow(), 600);
+        return;
+      }
+      showPreview(msg, '');
+    } catch (err) {
+      showPreview(msg, '無法自動傳送（' + (err && err.message ? err.message : '未知錯誤') + '），請複製內容後手動貼到聊天室。');
+    } finally {
+      submitBtn.disabled = false; submitBtn.textContent = '送出詢價';
+    }
+  });
+
+  function showPreview(msg, errText){
+    $('#pvBox').textContent = msg;
+    $('#pvMeta').textContent = msg.length + ' / 5000 字';
+    const pe = $('#pvErr'); pe.textContent = errText; pe.classList.toggle('show', !!errText);
+    $('#form').style.display = 'none'; $('#preview').classList.add('show');
+    $('#barForm').style.display = 'none'; $('#barPreview').style.display = 'flex';
+    window.scrollTo(0, 0);
+  }
+  $('#backBtn').addEventListener('click', () => {
+    $('#preview').classList.remove('show'); $('#form').style.display = '';
+    $('#barPreview').style.display = 'none'; $('#barForm').style.display = 'flex';
+  });
+  $('#copyBtn').addEventListener('click', async () => {
+    const text = $('#pvBox').textContent;
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (_) {
+      const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:-1000px;opacity:0'; document.body.appendChild(ta);
+      ta.select(); ta.setSelectionRange(0, text.length);
+      try { ok = document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+    }
+    toast(ok ? '已複製，請貼到 LINE 聊天室送出' : '複製失敗，請長按文字手動複製');
+  });
+
+  // ---- Toast ----
+  let tt;
+  function toast(s){ const t = $('#toast'); t.textContent = s; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2600); }
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>
