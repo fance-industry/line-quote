@@ -192,7 +192,7 @@
       <label class="chip"><input type="radio" name="yarn" value="聚酯 ATY"><span>聚酯 ATY</span></label>
       <label class="chip"><input type="radio" name="yarn" value="尼龍 FDY"><span>尼龍 FDY</span></label>
       <label class="chip"><input type="radio" name="yarn" value="尼龍 DTY"><span>尼龍 DTY</span></label>
-      <label class="chip"><input type="radio" name="yarn" value="特殊紗"><span>特殊紗</span></label>
+      <label class="chip"><input type="radio" name="yarn" value="尼龍 ATY"><span>尼龍 ATY</span></label>
       <label class="chip full"><input type="radio" name="yarn" value="其他"><span>其他</span></label>
     </div>
     <div class="sub-in" id="yarnOtherWrap">
@@ -435,7 +435,7 @@
 
   document.addEventListener('change', e => {
     const n = e.target.name || e.target.id;
-    if (n === 'yarn') toggle($('#yarnOtherWrap'), ['其他','特殊紗'].includes(radio('yarn')));
+    if (n === 'yarn') toggle($('#yarnOtherWrap'), ['其他'].includes(radio('yarn')));
     if (n === 'denier') { toggle($('#denierOtherWrap'), e.target.value === '其他'); if (e.target.value === '其他') $('#denierOther').focus(); }
     if (n === 'beams')  { toggle($('#beamsOtherWrap'), e.target.value === '其他'); if (e.target.value === '其他') $('#beamsOther').focus(); }
     if (n === 'src') toggle($('#srcExtra'), radio('src') === '客戶來紗代工');
@@ -499,7 +499,7 @@
     const L = ['【盤頭紗詢價】'];
     const add = (k, v) => { if (v !== '' && v != null) L.push('■ ' + k + '：' + v); };
     let yarn = radio('yarn'); const yo = val('yarnOther');
-    if (yarn && ['其他','特殊紗'].includes(yarn) && yo) yarn += '（' + yo + '）';
+    if (yarn && ['其他'].includes(yarn) && yo) yarn += '（' + yo + '）';
     add('紗種', yarn);
     add('丹尼／絲數', denierValue());
     add('光澤', radio('luster'));
