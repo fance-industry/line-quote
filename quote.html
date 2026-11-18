@@ -185,36 +185,51 @@
 
   <!-- 1 紗種 -->
   <section class="field" data-req="yarn" id="f-yarn">
-    <div class="label"><span class="no">1</span>紗種 <span class="req">*</span></div>
-    <div class="chips" role="radiogroup" aria-label="紗種">
-      <label class="chip"><input type="radio" name="yarn" value="聚酯 FDY"><span>聚酯 FDY</span></label>
-      <label class="chip"><input type="radio" name="yarn" value="聚酯 DTY"><span>聚酯 DTY</span></label>
-      <label class="chip"><input type="radio" name="yarn" value="聚酯 ATY"><span>聚酯 ATY</span></label>
-      <label class="chip"><input type="radio" name="yarn" value="尼龍 FDY"><span>尼龍 FDY</span></label>
-      <label class="chip"><input type="radio" name="yarn" value="尼龍 DTY"><span>尼龍 DTY</span></label>
-      <label class="chip"><input type="radio" name="yarn" value="尼龍 ATY"><span>尼龍 ATY</span></label>
-      <label class="chip full"><input type="radio" name="yarn" value="其他"><span>其他</span></label>
+    <div class="label"><span class="no">1</span>紗種 <span class="req">*</span><span class="opt">（可複選）</span></div>
+    <div class="chips" role="group" aria-label="紗種">
+      <label class="chip"><input type="checkbox" name="yarn" value="有漿"><span>有漿</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="免漿"><span>免漿</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="聚酯 FDY"><span>聚酯 FDY</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="聚酯 DTY"><span>聚酯 DTY</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="聚酯 ATY"><span>聚酯 ATY</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="尼龍 FDY"><span>尼龍 FDY</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="尼龍 DTY"><span>尼龍 DTY</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="尼龍 ATY"><span>尼龍 ATY</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="加彈紗OP"><span>加彈紗OP</span></label>
+      <label class="chip"><input type="checkbox" name="yarn" value="其他"><span>其他</span></label>
     </div>
     <div class="sub-in" id="yarnOtherWrap">
       <input class="inp" id="yarnOther" type="text" maxlength="60" placeholder="請簡述紗種（選填）">
     </div>
-    <div class="err">請選擇紗種</div>
+    <div class="err">請至少選擇一項紗種</div>
   </section>
 
   <!-- 2 丹尼／絲數 -->
   <section class="field" data-req="denier" id="f-denier">
     <div class="label"><span class="no">2</span>丹尼／絲數 <span class="req">*</span><span class="hint">D/F</span></div>
-    <select class="inp empty" id="denier" name="denier" aria-label="丹尼／絲數">
-      <option value="" selected disabled>請選擇丹尼／絲數</option>
-      <option>15/12</option><option>20/24</option><option>30/12</option>
-      <option>50/36</option><option>50/72</option><option>50/144</option>
-      <option>75/36</option><option>75/72</option><option>100/48</option>
-      <option>150/48</option><option value="其他">其他（自行輸入）</option>
-    </select>
-    <div class="sub-in" id="denierOtherWrap">
-      <input class="inp" id="denierOther" type="text" inputmode="text" maxlength="30" placeholder="例如：40/34">
+    <div class="subgrid">
+      <div>
+        <div class="mini">丹尼</div>
+        <select class="inp empty" id="denier" name="denier" aria-label="丹尼">
+          <option value="" selected disabled>請選擇丹尼</option>
+          <option>15</option><option>20</option><option>30</option><option>50</option><option>75</option><option>100</option><option>150</option><option value="自訂">自訂</option>
+        </select>
+        <div class="sub-in" id="denierOtherWrap">
+          <input class="inp" id="denierOther" type="text" inputmode="decimal" maxlength="8" placeholder="輸入丹尼，例如 40" aria-label="自訂丹尼">
+        </div>
+      </div>
+      <div>
+        <div class="mini">絲數</div>
+        <select class="inp empty" id="fil" name="fil" aria-label="絲數">
+          <option value="" selected disabled>請選擇絲數</option>
+          <option>12</option><option>24</option><option>36</option><option>48</option><option>72</option><option>144</option><option value="自訂">自訂</option>
+        </select>
+        <div class="sub-in" id="filOtherWrap">
+          <input class="inp" id="filOther" type="text" inputmode="numeric" maxlength="6" placeholder="輸入絲數，例如 34" aria-label="自訂絲數">
+        </div>
+      </div>
     </div>
-    <div class="err" id="denierErr">請選擇丹尼／絲數</div>
+    <div class="err" id="denierErr">請選擇丹尼與絲數</div>
   </section>
 
   <!-- 3 光澤 -->
@@ -409,7 +424,7 @@
   const LIFF_ID = '2011795439-Bebt3yfH';          // 於 LINE Developers 建立 LIFF App 後替換
   const MAX_MSG = 4900;                   // LINE 文字訊息上限 5000 字元，預留緩衝
 
-  const FUNCS = ['阻燃','環保','假彈','海島','導電紗','易拉絲','ATY','HOY','sigma','十字斷面','異斷面','海廢紗','複合紗','高強力','大舞龍','小舞龍','20 OP','40 OP'];
+  const FUNCS = ['20 OP','40 OP','阻燃','環保','假彈','海島','導電紗','易拉絲','ATY','HOY','sigma','十字斷面','異斷面','海廢紗','複合紗','高強力','大舞龍','小舞龍'];
 
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
@@ -430,13 +445,15 @@
   });
 
   // ---- 動態顯示 ----
+  function yarns(){ return $$('input[name=yarn]:checked').map(x => x.value); }
   function radio(name){ const x = $('input[name="'+name+'"]:checked'); return x ? x.value : ''; }
   function toggle(el, on){ el.classList.toggle('show', !!on); }
 
   document.addEventListener('change', e => {
     const n = e.target.name || e.target.id;
-    if (n === 'yarn') toggle($('#yarnOtherWrap'), ['其他'].includes(radio('yarn')));
-    if (n === 'denier') { toggle($('#denierOtherWrap'), e.target.value === '其他'); if (e.target.value === '其他') $('#denierOther').focus(); }
+    if (n === 'yarn') toggle($('#yarnOtherWrap'), yarns().includes('其他'));
+    if (n === 'denier') { toggle($('#denierOtherWrap'), e.target.value === '自訂'); if (e.target.value === '自訂') $('#denierOther').focus(); }
+    if (n === 'fil')    { toggle($('#filOtherWrap'), e.target.value === '自訂'); if (e.target.value === '自訂') $('#filOther').focus(); }
     if (n === 'beams')  { toggle($('#beamsOtherWrap'), e.target.value === '其他'); if (e.target.value === '其他') $('#beamsOther').focus(); }
     if (n === 'src') toggle($('#srcExtra'), radio('src') === '客戶來紗代工');
     if (e.target.tagName === 'SELECT') e.target.classList.toggle('empty', !e.target.value);
@@ -447,13 +464,17 @@
   // ---- 取值 ----
   const val = id => ($('#'+id).value || '').trim();
   const num = id => { const v = val(id); return v === '' ? NaN : Number(v); };
-  function denierValue(){ const s = val('denier'); return s === '其他' ? val('denierOther') : s; }
+  function denierPart(){ const s = val('denier'); return s === '自訂' ? val('denierOther') : s; }
+  function filPart(){ const s = val('fil'); return s === '自訂' ? val('filOther') : s; }
+  function denierValid(){ const d = denierPart(); return /^\d+(\.\d+)?$/.test(d) && Number(d) > 0; }
+  function filValid(){ const f = filPart(); return /^\d+$/.test(f) && Number(f) > 0; }
+  function denierValue(){ return (denierValid() && filValid()) ? (Number(denierPart()) + '/' + Number(filPart())) : ''; }
   function beamsValue(){ const s = val('beams'); return s === '其他' ? val('beamsOther') : s; }
 
   // ---- 驗證 ----
   const RULES = {
-    yarn:    () => !!radio('yarn'),
-    denier:  () => !!denierValue(),
+    yarn:    () => yarns().length > 0,
+    denier:  () => denierValid() && filValid(),
     luster:  () => !!radio('luster'),
     loom:    () => !!radio('loom'),
     ends:    () => Number.isInteger(num('ends')) && num('ends') > 0,
@@ -484,7 +505,7 @@
       }
     });
     // 「其他」細項提示文字
-    $('#denierErr').textContent = val('denier') === '其他' ? '請輸入丹尼／絲數' : '請選擇丹尼／絲數';
+    $('#denierErr').textContent = (!val('denier') || !val('fil')) ? '請選擇丹尼與絲數' : '請輸入正確的丹尼與絲數（數字）';
     $('#beamsErr').textContent  = val('beams') === '其他'  ? '請輸入盤頭數量（正整數）' : '請選擇盤頭數量';
     if (first) {
       first.scrollIntoView({behavior:'smooth', block:'start'});
@@ -498,8 +519,8 @@
   function buildMessage(){
     const L = ['【盤頭紗詢價】'];
     const add = (k, v) => { if (v !== '' && v != null) L.push('■ ' + k + '：' + v); };
-    let yarn = radio('yarn'); const yo = val('yarnOther');
-    if (yarn && ['其他'].includes(yarn) && yo) yarn += '（' + yo + '）';
+    const yo = val('yarnOther');
+    const yarn = yarns().map(v => (v === '其他' && yo) ? v + '（' + yo + '）' : v).join('、');
     add('紗種', yarn);
     add('丹尼／絲數', denierValue());
     add('光澤', radio('luster'));
