@@ -328,9 +328,20 @@
     </div>
   </section>
 
-  <!-- 11 原料 -->
+  <!-- 11 交貨地點 -->
+  <section class="field" data-req="place" id="f-place">
+    <div class="label"><span class="no">11</span>交貨地點 <span class="req">*</span></div>
+    <div class="chips c3" role="radiogroup" aria-label="交貨地點">
+      <label class="chip"><input type="radio" name="place" value="北部"><span>北部</span></label>
+      <label class="chip"><input type="radio" name="place" value="中部"><span>中部</span></label>
+      <label class="chip"><input type="radio" name="place" value="南部"><span>南部</span></label>
+    </div>
+    <div class="err">請選擇交貨地點</div>
+  </section>
+
+  <!-- 12 原料 -->
   <section class="field" id="f-src">
-    <div class="label"><span class="no">11</span>原料</div>
+    <div class="label"><span class="no">12</span>原料</div>
     <div class="chips" role="radiogroup" aria-label="原料">
       <label class="chip"><input type="radio" name="src" value="本廠供紗"><span>本廠供紗</span></label>
       <label class="chip"><input type="radio" name="src" value="客戶來紗代工"><span>客戶來紗代工</span></label>
@@ -352,9 +363,9 @@
 
   <div class="group-title">聯絡資料</div>
 
-  <!-- 12 聯絡資料 -->
+  <!-- 13 聯絡資料 -->
   <section class="field" id="f-contact">
-    <div class="label"><span class="no">12</span>聯絡資料</div>
+    <div class="label"><span class="no">13</span>聯絡資料</div>
     <div class="stack">
       <div id="f-company" data-req="company">
         <div class="mini">公司名稱 <span class="req">*</span></div>
@@ -482,6 +493,7 @@
     width:   () => num('width') > 0,
     length:  () => num('length') > 0,
     beams:   () => { const b = beamsValue(); return b !== '' && Number.isInteger(Number(b)) && Number(b) > 0; },
+    place:   () => !!radio('place'),
     company: () => !!val('company'),
     person:  () => !!val('person'),
   };
@@ -533,6 +545,7 @@
     if (val('length')) add('總盤頭紗長度', fmtNum(num('length')) + ' ' + radio('lenUnit'));
     if (beamsValue())  add('盤頭數量', beamsValue() + ' 軸');
     add('交期', radio('lead'));
+    add('交貨地點', radio('place'));
     const src = radio('src');
     add('原料', src);
     if (src === '客戶來紗代工') {
