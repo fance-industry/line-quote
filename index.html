@@ -185,7 +185,7 @@
 
   <!-- 1 紗種 -->
   <section class="field" data-req="yarn" id="f-yarn">
-    <div class="label"><span class="no">1</span>紗種 <span class="req">*</span><span class="opt">（可複選）</span></div>
+    <div class="label"><span class="no">1</span>紗種 <span class="req">*</span><span class="opt">（可複選，有漿／免漿擇一）</span></div>
     <div class="chips" role="group" aria-label="紗種">
       <label class="chip"><input type="checkbox" name="yarn" value="有漿"><span>有漿</span></label>
       <label class="chip"><input type="checkbox" name="yarn" value="免漿"><span>免漿</span></label>
@@ -451,6 +451,7 @@
 
   document.addEventListener('change', e => {
     const n = e.target.name || e.target.id;
+    if (n === 'yarn' && e.target.checked && (e.target.value === '有漿' || e.target.value === '免漿')) { const o = e.target.value === '有漿' ? '免漿' : '有漿'; const x = $('input[name=yarn][value="'+o+'"]'); if (x) x.checked = false; }
     if (n === 'yarn') toggle($('#yarnOtherWrap'), yarns().includes('其他'));
     if (n === 'denier') { toggle($('#denierOtherWrap'), e.target.value === '自訂'); if (e.target.value === '自訂') $('#denierOther').focus(); }
     if (n === 'fil')    { toggle($('#filOtherWrap'), e.target.value === '自訂'); if (e.target.value === '自訂') $('#filOther').focus(); }
